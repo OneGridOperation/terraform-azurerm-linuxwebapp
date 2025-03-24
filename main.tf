@@ -40,7 +40,7 @@ resource "azurerm_linux_web_app" "linux_web_app" {
     #    priority    = contains(keys(ip_restriction.value), "priority") ? ip_restriction.value["priority"] : null
     #    headers     = contains(keys(ip_restriction.value), "headers") ? ip_restriction.value["headers"] : null
     #  }
-    }
+    #}
   }
 
   dynamic "logs" {
