@@ -30,6 +30,17 @@ resource "azurerm_linux_web_app" "linux_web_app" {
 
     vnet_route_all_enabled = try(var.configuration.site_config.vnet_route_all_enabled, false)
 
+    ip_restriction_default_action = try(var.configuration.ip_restriction_default_action, "Allow")
+
+    dynamic "ip_restriction" {
+      for_each = try(var.configuration.ip_restriction, null) != null ? var.configuration.ip_restriction : []
+      content {
+        name       = try(ip_restriction.value.name, "")
+        ip_address = ip_restriction.value.ip_address
+        action     = try(ip_restriction.value.action, "Allow")
+      }
+    }
+
     #dynamic "ip_restriction" {
     #  for_each = try(var.configuration.site_config.ip_restrictions, null) != null ? var.configuration.site_config.ip_restrictions : []
     #  content {
