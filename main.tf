@@ -30,24 +30,21 @@ resource "azurerm_linux_web_app" "linux_web_app" {
 
     vnet_route_all_enabled = try(var.configuration.site_config.vnet_route_all_enabled, false)
 
-    dynamic "application_stack" {
-      for_each = try(var.configuration.site_config.application_stack, null) != null ? var.configuration.site_config.application_stack : []
-      content {
-        #docker_image_name        = null # Updated through CI/CD
-        docker_registry_url      = try(application_stack.value.docker_registry_url, null)
-        docker_registry_username = try(application_stack.value.docker_registry_username, null)
-        docker_registry_password = try(application_stack.value.docker_registry_password, null)
+    application_stack {
+      docker_image_name        = null # Updated through CI/CD
+      docker_registry_url      = try(var.configuration.site_config.application_stack.docker_registry_url, null)
+      docker_registry_username = try(var.configuration.site_config.application_stack.docker_registry_username, null)
+      docker_registry_password = try(var.configuration.site_config.application_stack.docker_registry_password, null)
 
-        #dotnet_version      = null
-        #go_version          = null
-        #java_server         = null
-        #java_server_version = null
-        #java_version        = null
-        #node_version        = null
-        #php_version         = null
-        #python_version      = null
-        #ruby_version        = null
-      }
+      #dotnet_version      = null
+      #go_version          = null
+      #java_server         = null
+      #java_server_version = null
+      #java_version        = null
+      #node_version        = null
+      #php_version         = null
+      #python_version      = null
+      #ruby_version        = null
     }
 
     ip_restriction_default_action = try(var.configuration.site_config.ip_restriction_default_action, "Allow")
