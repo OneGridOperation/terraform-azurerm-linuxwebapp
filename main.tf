@@ -31,7 +31,7 @@ resource "azurerm_linux_web_app" "linux_web_app" {
     vnet_route_all_enabled = try(var.configuration.site_config.vnet_route_all_enabled, false)
 
     application_stack {
-      docker_image_name        = null # Updated through CI/CD
+      docker_image_name        = "" # Updated through CI/CD
       docker_registry_url      = try(var.configuration.site_config.application_stack.docker_registry_url, null)
       docker_registry_username = try(var.configuration.site_config.application_stack.docker_registry_username, null)
       docker_registry_password = try(var.configuration.site_config.application_stack.docker_registry_password, null)
