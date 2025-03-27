@@ -33,9 +33,20 @@ resource "azurerm_linux_web_app" "linux_web_app" {
     dynamic "application_stack" {
       for_each = try(var.configuration.site_config.application_stack, null) != null ? [var.configuration.site_config.application_stack] : []
       content {
+        docker_image_name        = null # Updated through CI/CD
         docker_registry_url      = try(var.configuration.site_config.application_stack.docker_registry_url, null)
         docker_registry_username = try(var.configuration.site_config.application_stack.docker_registry_username, null)
         docker_registry_password = try(var.configuration.site_config.application_stack.docker_registry_password, null)
+
+        dotnet_version      = null
+        go_version          = null
+        java_server         = null
+        java_server_version = null
+        java_version        = null
+        node_version        = null
+        php_version         = null
+        python_version      = null
+        ruby_version        = null
       }
     }
 
@@ -95,7 +106,8 @@ resource "azurerm_linux_web_app" "linux_web_app" {
 
   lifecycle {
     ignore_changes = [
-      virtual_network_subnet_id
+      virtual_network_subnet_id,
+      site_config.0.application_stack.0.docker_image_name
     ]
   }
 
