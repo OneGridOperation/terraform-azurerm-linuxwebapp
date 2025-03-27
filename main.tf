@@ -30,7 +30,16 @@ resource "azurerm_linux_web_app" "linux_web_app" {
 
     vnet_route_all_enabled = try(var.configuration.site_config.vnet_route_all_enabled, false)
 
-    ip_restriction_default_action = try(var.configuration.ip_restriction_default_action, "Allow")
+    dynamic "application_stack" {
+      for_each = try(var.configuration.site_config.application_stack, null) != null ? [var.configuration.site_config.application_stack] : []
+      content {
+        docker_registry_url      = try(var.configuration.site_config.application_stack.docker_registry_url, null)
+        docker_registry_username = try(var.configuration.site_config.application_stack.docker_registry_username, null)
+        docker_registry_password = try(var.configuration.site_config.application_stack.docker_registry_password, null)
+      }
+    }
+
+    ip_restriction_default_action = try(var.configuration.site_config.ip_restriction_default_action, "Allow")
 
     dynamic "ip_restriction" {
       for_each = try(var.configuration.ip_restriction, null) != null ? var.configuration.ip_restriction : []
@@ -86,7 +95,8 @@ resource "azurerm_linux_web_app" "linux_web_app" {
 
   lifecycle {
     ignore_changes = [
-      virtual_network_subnet_id
+      virtual_network_subnet_id,
+      site_config[0].application_stack[0].docker_image_name
     ]
   }
 
