@@ -11,6 +11,7 @@ resource "azurerm_linux_web_app" "linux_web_app" {
   app_settings                  = var.app_settings
   https_only                    = var.https_only
   public_network_access_enabled = var.public_network_access_enabled
+  vnet_image_pull_enabled       = var.vnet_image_pull_enabled
 
   dynamic "identity" {
     for_each = try(var.configuration.identity, null) != null ? [var.configuration.identity] : []
@@ -39,6 +40,9 @@ resource "azurerm_linux_web_app" "linux_web_app" {
 
     ip_restriction_default_action = try(var.configuration.site_config.ip_restriction_default_action, "Allow")
 
+    scm_use_main_ip_restriction       = try(var.configuration.site_config.scm_use_main_ip_restriction, null)
+    scm_ip_restriction_default_action = try(var.configuration.site_config.scm_ip_restriction_default_action, "Allow")
+
     dynamic "ip_restriction" {
       for_each = try(var.configuration.ip_restriction, null) != null ? var.configuration.ip_restriction : []
       content {
@@ -59,6 +63,18 @@ resource "azurerm_linux_web_app" "linux_web_app" {
     #    headers     = contains(keys(ip_restriction.value), "headers") ? ip_restriction.value["headers"] : null
     #  }
     #}
+
+    dynamic "scm_ip_restriction" {
+      for_each = try(var.configuration.scm_ip_restriction, null) != null ? var.configuration.scm_ip_restriction : []
+      content {
+        name     = try(scm_ip_restriction.value.name, "")
+        priority = try(scm_ip_restriction.value.priority, 65000)
+        action   = try(scm_ip_restriction.value.action, "Allow")
+
+        ip_address                = scm_ip_restriction.value.ip_address
+        virtual_network_subnet_id = scm_ip_restriction.value.virtual_network_subnet_id
+      }
+    }
   }
 
   dynamic "logs" {
