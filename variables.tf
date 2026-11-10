@@ -104,3 +104,9 @@ variable "public_network_access_enabled" {
   default     = true
   type        = bool
 }
+
+variable "vnet_image_pull_enabled" {
+  description = "Should the traffic for the image pull be routed over virtual network enabled. Defaults to `false`"
+  default     = false
+  type        = bool
+}
